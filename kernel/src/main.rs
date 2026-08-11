@@ -76,24 +76,36 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     zenith_kernel::fs::vfs::VFS.lock().write_file("/kernel.log", b"Zenith OS Phase 4 Filesystem Active!");
     println!("[VFS WRITE] Created /kernel.log cleanly");
 
-    // 8. Test Phase 3 & Phase 4 File Syscalls
+    // 8. Initialize Phase 5 Zenith Interactive Shell
+    println!("[INFO] Initializing Phase 5 Zenith Interactive Shell...");
+    let mut shell = zenith_kernel::shell::ZenithShell::new();
+    shell.print_prompt();
+
+    // Run test interactive shell commands
+    shell.execute_command("help");
+    shell.execute_command("sysinfo");
+    shell.execute_command("ls");
+    shell.execute_command("cat welcome.txt");
+    shell.execute_command("ver");
+
+    // 9. Test Phase 3 & Phase 4 File Syscalls
     test_user_syscall();
 
-    // 9. Serial Port Output for QEMU / Console logging
+    // 10. Serial Port Output for QEMU / Console logging
     serial_println!("===========================================");
-    serial_println!("ZENITH OS Phase 4 Drivers & VFS Active!");
+    serial_println!("ZENITH OS Phase 5 Interactive Shell Active!");
     serial_println!("===========================================");
 
-    // 10. Test Breakpoint Exception Handler (#BP)
+    // 11. Test Breakpoint Exception Handler (#BP)
     x86_64::instructions::interrupts::int3();
     println!("[SUCCESS] Breakpoint exception (#BP) handled cleanly!");
 
     #[cfg(test)]
     test_main();
 
-    println!("[STATUS] Zenith OS Phase 4 Kernel active. Listening for IRQs, VFS & Syscalls...");
+    println!("[STATUS] Zenith OS Phase 5 Kernel active. Shell REPL Listening...");
 
-    // 11. Halt CPU until next interrupt
+    // 12. Halt CPU until next interrupt
     loop {
         x86_64::instructions::hlt();
     }

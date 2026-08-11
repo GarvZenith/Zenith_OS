@@ -36,6 +36,8 @@ E:\Project\NewOS\
             │   └── block.rs         # 512-byte sector RamBlock storage driver
             ├── fs/                  # Virtual File System Layer
             │   └── vfs.rs           # VFS root node tree, file read/write API
+            ├── shell/               # Zenith Interactive Command Line Shell
+            │   └── mod.rs           # REPL prompt, parser (help, sysinfo, ls, cat, echo, ver)
             ├── syscall/             # Fast Syscall Boundary & Dispatcher
             │   ├── mod.rs           # MSR registers (EFER, LSTAR, SFMASK) init
             │   └── dispatch.rs      # SYS_OPEN, SYS_READ, SYS_WRITE, SYS_CLOSE, SYS_EXIT
@@ -72,7 +74,10 @@ E:\Project\NewOS\
   - 512-byte Sector RamBlock Device Driver (`src/drivers/block.rs`)
   - Virtual File System (VFS) Root Tree & File Read/Write (`src/fs/vfs.rs`)
   - Integrated File Syscalls (`SYS_OPEN`, `SYS_READ`, `SYS_CLOSE`)
-- [ ] **Phase 5: Zenith Shell & Userland Init**
+- [x] **Phase 5: Zenith Shell & Userland Init**
+  - Interactive REPL prompt `zenith> ` (`src/shell/mod.rs`)
+  - Built-in commands (`help`, `sysinfo`, `ls`, `cat`, `echo`, `clear`, `ver`)
+  - Real-time keystroke parser from PS/2 keyboard IRQ
 - [ ] **Phase 6: 3D Brain Compositor & Visual Shell**
 
 ---
