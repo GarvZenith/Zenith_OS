@@ -88,24 +88,30 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     shell.execute_command("cat welcome.txt");
     shell.execute_command("ver");
 
-    // 9. Test Phase 3 & Phase 4 File Syscalls
+    // 9. Initialize Phase 6 3D Brain Compositor & Graphical Visual Shell UI
+    println!("[INFO] Initializing Phase 6 3D Brain Compositor & Graphical Visual Shell UI...");
+    let compositor = zenith_kernel::gfx::compositor::WorkspaceCompositor::new();
+    let mut fb = zenith_kernel::gfx::framebuffer::FRAMEBUFFER.lock();
+    compositor.render_workspace(&mut fb);
+
+    // 10. Test Phase 3 & Phase 4 File Syscalls
     test_user_syscall();
 
-    // 10. Serial Port Output for QEMU / Console logging
+    // 11. Serial Port Output for QEMU / Console logging
     serial_println!("===========================================");
-    serial_println!("ZENITH OS Phase 5 Interactive Shell Active!");
+    serial_println!("ZENITH OS Phase 6 3D Brain Compositor Active!");
     serial_println!("===========================================");
 
-    // 11. Test Breakpoint Exception Handler (#BP)
+    // 12. Test Breakpoint Exception Handler (#BP)
     x86_64::instructions::interrupts::int3();
     println!("[SUCCESS] Breakpoint exception (#BP) handled cleanly!");
 
     #[cfg(test)]
     test_main();
 
-    println!("[STATUS] Zenith OS Phase 5 Kernel active. Shell REPL Listening...");
+    println!("[STATUS] Zenith OS Phase 6 Kernel active. 3D Brain Shell Active!");
 
-    // 12. Halt CPU until next interrupt
+    // 13. Halt CPU until next interrupt
     loop {
         x86_64::instructions::hlt();
     }

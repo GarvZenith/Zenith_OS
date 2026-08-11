@@ -13,6 +13,7 @@ pub mod allocator;
 pub mod drivers;
 pub mod fs;
 pub mod gdt;
+pub mod gfx;
 pub mod interrupts;
 pub mod memory;
 pub mod pic;

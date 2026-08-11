@@ -3,7 +3,7 @@
 > **"Your Mind. Your Space. Your Control."**  
 > *Everything is Connected. Everything is Intelligent.*
 
-Zenith OS is a standalone, neural-brain-based Operating System written from scratch in Rust (`#![no_std]`). It features a bare-metal kernel foundation and a 3D Neural Brain visual shell.
+Zenith OS is a standalone, neural-brain-based Operating System written from scratch in Rust (`#![no_std]`). It features a bare-metal kernel foundation, preemptive multitasking, fast syscall boundary, VFS filesystem, interactive shell, and a 3D Neural Brain visual shell compositor.
 
 ---
 
@@ -28,7 +28,7 @@ E:\Project\NewOS\
             ├── gdt.rs               # GDT, TSS, IST & Ring 3 User Descriptors
             ├── interrupts.rs        # IDT & CPU exception handlers (#BP, #DF, #PF)
             ├── memory.rs            # Physical Frame Allocator & Paging page tables
-            ├── allocator.rs         # Kernel Heap Allocator (Box, Vec, BTreeMap)
+            ├── allocator.rs         # 4 MiB Kernel Heap Allocator (Box, Vec, BTreeMap)
             ├── pic.rs               # 8259 PIC Hardware Interrupt Controller Remap
             ├── drivers/             # Device Drivers Layer
             │   ├── keyboard.rs      # Keystroke input queue buffer
@@ -36,6 +36,10 @@ E:\Project\NewOS\
             │   └── block.rs         # 512-byte sector RamBlock storage driver
             ├── fs/                  # Virtual File System Layer
             │   └── vfs.rs           # VFS root node tree, file read/write API
+            ├── gfx/                 # 3D Brain & Graphical Visual Shell UI
+            │   ├── brain.rs         # 3D Neural Node Mesh & Synapse Line Renderer
+            │   ├── compositor.rs    # Workspace Compositor, Status Bar & Dock UI
+            │   └── framebuffer.rs   # 32-bit RGB Pixel engine & 2D drawing primitives
             ├── shell/               # Zenith Interactive Command Line Shell
             │   └── mod.rs           # REPL prompt, parser (help, sysinfo, ls, cat, echo, ver)
             ├── syscall/             # Fast Syscall Boundary & Dispatcher
@@ -57,7 +61,7 @@ E:\Project\NewOS\
   - Interrupt Descriptor Table (IDT) with `#BP`, `#DF`, `#PF` handlers
 - [x] **Phase 1: Memory Management & Heap Allocator**
   - Physical Frame Allocator & Level 4 Page Table mapping (`src/memory.rs`)
-  - 100 KiB Kernel Heap Allocator (`src/allocator.rs`)
+  - 4 MiB Kernel Heap Allocator (`src/allocator.rs`)
   - Dynamic memory allocations (`Box`, `Vec`) in kernel space
 - [x] **Phase 2: Preemptive Task Scheduler & Concurrency**
   - 8259 PIC Interrupt Controller Remapping (`src/pic.rs`)
@@ -78,7 +82,10 @@ E:\Project\NewOS\
   - Interactive REPL prompt `zenith> ` (`src/shell/mod.rs`)
   - Built-in commands (`help`, `sysinfo`, `ls`, `cat`, `echo`, `clear`, `ver`)
   - Real-time keystroke parser from PS/2 keyboard IRQ
-- [ ] **Phase 6: 3D Brain Compositor & Visual Shell**
+- [x] **Phase 6: 3D Brain Compositor & Visual Shell**
+  - 32-bit RGB Framebuffer Engine (`src/gfx/framebuffer.rs`)
+  - 3D Perspective Projection & 3D Neural Brain Node Mesh (`src/gfx/brain.rs`)
+  - Graphical Workspace Shell Compositor with Top Status Bar & Bottom Application Dock (`src/gfx/compositor.rs`)
 
 ---
 
