@@ -1,0 +1,14 @@
+# Cargo & Rust build outputs
+/target
+kernel/target
+
+# OS Binaries & Images
+*.bin
+*.iso
+*.exe
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.swp
+*.log
