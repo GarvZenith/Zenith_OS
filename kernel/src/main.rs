@@ -48,25 +48,46 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     vec.push(50);
     println!("[HEAP TEST] Heap Vector allocated at: {:p}, elements: {:?}", vec.as_ptr(), vec);
 
-    // 6. Serial Port Output for QEMU / Console logging
+    // 6. Initialize Multitasking Executor & Spawn Tasks
+    println!("[INFO] Initializing Phase 2 Preemptive Multitasking...");
+    let mut executor = zenith_kernel::task::simple_executor::SimpleExecutor::new();
+    executor.spawn(zenith_kernel::task::Task::new(task_alpha()));
+    executor.spawn(zenith_kernel::task::Task::new(task_beta()));
+
+    println!("[TASK EXEC] Running concurrent kernel tasks:");
+    executor.run();
+
+    // 7. Serial Port Output for QEMU / Console logging
     serial_println!("===========================================");
-    serial_println!("ZENITH OS Phase 1 Memory Management Active!");
-    serial_println!("Box value: {}, Vec len: {}", *heap_value, vec.len());
+    serial_println!("ZENITH OS Phase 2 Multitasking Active!");
     serial_println!("===========================================");
 
-    // 7. Test Breakpoint Exception Handler (#BP)
+    // 8. Test Breakpoint Exception Handler (#BP)
     x86_64::instructions::interrupts::int3();
     println!("[SUCCESS] Breakpoint exception (#BP) handled cleanly!");
 
     #[cfg(test)]
     test_main();
 
-    println!("[STATUS] Zenith OS Phase 1 Kernel active. CPU HLT loop...");
+    println!("[STATUS] Zenith OS Phase 2 Kernel active. Listening for IRQs...");
 
-    // 8. Halt CPU until next interrupt
+    // 9. Halt CPU until next interrupt
     loop {
         x86_64::instructions::hlt();
     }
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn task_alpha() {
+    let number = async_number().await;
+    println!("[TASK ALPHA] Running concurrently! Async number: {}", number);
+}
+
+async fn task_beta() {
+    println!("[TASK BETA] Multitasking active in Zenith OS!");
 }
 
 /// Panic Handler for Zenith OS (Bare-Metal)

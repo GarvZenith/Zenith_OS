@@ -13,12 +13,16 @@ pub mod allocator;
 pub mod gdt;
 pub mod interrupts;
 pub mod memory;
+pub mod pic;
 pub mod serial;
+pub mod task;
 pub mod vga_buffer;
 
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
+    unsafe { pic::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
 
 pub trait Testable {

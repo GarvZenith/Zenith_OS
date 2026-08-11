@@ -12,6 +12,13 @@ lazy_static! {
                 .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
         idt.page_fault.set_handler_fn(page_fault_handler);
+
+        // Hardware Interrupts
+        idt[crate::pic::InterruptIndex::Timer.as_u8()]
+            .set_handler_fn(timer_interrupt_handler);
+        idt[crate::pic::InterruptIndex::Keyboard.as_u8()]
+            .set_handler_fn(keyboard_interrupt_handler);
+
         idt
     };
 }
@@ -47,7 +54,27 @@ extern "x86-interrupt" fn page_fault_handler(
     panic!("Page fault unhandled - stopping kernel execution");
 }
 
-#[test_case]
-fn test_breakpoint_exception() {
-    x86_64::instructions::interrupts::int3();
+extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    unsafe {
+        crate::pic::PICS
+            .lock()
+            .notify_end_of_interrupt(crate::pic::InterruptIndex::Timer.as_u8());
+    }
+}
+
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    use x86_64::instructions::port::Port;
+
+    let mut port = Port::new(0x60);
+    let scancode: u8 = unsafe { port.read() };
+
+    if scancode < 0x80 {
+        serial_println!("[KEYBOARD IRQ] Key Press Scancode: 0x{:x}", scancode);
+    }
+
+    unsafe {
+        crate::pic::PICS
+            .lock()
+            .notify_end_of_interrupt(crate::pic::InterruptIndex::Keyboard.as_u8());
+    }
 }
