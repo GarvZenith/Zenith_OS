@@ -30,9 +30,15 @@ E:\Project\NewOS\
             ├── memory.rs            # Physical Frame Allocator & Paging page tables
             ├── allocator.rs         # Kernel Heap Allocator (Box, Vec, BTreeMap)
             ├── pic.rs               # 8259 PIC Hardware Interrupt Controller Remap
+            ├── drivers/             # Device Drivers Layer
+            │   ├── keyboard.rs      # Keystroke input queue buffer
+            │   ├── pci.rs           # PCI Bus Enumeration (0xCF8/0xCFC ports)
+            │   └── block.rs         # 512-byte sector RamBlock storage driver
+            ├── fs/                  # Virtual File System Layer
+            │   └── vfs.rs           # VFS root node tree, file read/write API
             ├── syscall/             # Fast Syscall Boundary & Dispatcher
             │   ├── mod.rs           # MSR registers (EFER, LSTAR, SFMASK) init
-            │   └── dispatch.rs      # SYS_WRITE, SYS_YIELD, SYS_EXIT handlers
+            │   └── dispatch.rs      # SYS_OPEN, SYS_READ, SYS_WRITE, SYS_CLOSE, SYS_EXIT
             └── task/                # Multitasking & Concurrency Engine
                 ├── mod.rs           # TaskId & Task async abstractions
                 └── simple_executor.rs # Kernel Async Task Executor
@@ -60,7 +66,12 @@ E:\Project\NewOS\
   - GDT User Code (`0x18|3`) & User Data (`0x20|3`) segment descriptors
   - Fast hardware syscall MSR configuration (`EFER`, `LStar`, `SFMask`)
   - Syscall Dispatch Table (`SYS_WRITE`, `SYS_YIELD`, `SYS_EXIT`)
-- [ ] **Phase 4: Drivers, VFS & Filesystem**
+- [x] **Phase 4: Drivers, VFS & Filesystem**
+  - Thread-safe Keyboard Event Queue (`src/drivers/keyboard.rs`)
+  - PCI Bus Enumeration & Device Discovery (`src/drivers/pci.rs`)
+  - 512-byte Sector RamBlock Device Driver (`src/drivers/block.rs`)
+  - Virtual File System (VFS) Root Tree & File Read/Write (`src/fs/vfs.rs`)
+  - Integrated File Syscalls (`SYS_OPEN`, `SYS_READ`, `SYS_CLOSE`)
 - [ ] **Phase 5: Zenith Shell & Userland Init**
 - [ ] **Phase 6: 3D Brain Compositor & Visual Shell**
 

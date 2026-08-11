@@ -57,24 +57,43 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("[TASK EXEC] Running concurrent kernel tasks:");
     executor.run();
 
-    // 7. Test Phase 3 Syscall Boundary
+    // 7. Initialize Phase 4 Drivers, PCI Scan & VFS Filesystem
+    println!("[INFO] Initializing Phase 4 Drivers & VFS Filesystem...");
+    zenith_kernel::drivers::pci::scan_pci_bus();
+
+    // Test VFS Root Directory Listing & File Read/Write
+    let vfs_list = zenith_kernel::fs::vfs::VFS.lock().list_root();
+    println!("[VFS] Root Directory Contents: {:?}", vfs_list);
+
+    if let Some(data) = zenith_kernel::fs::vfs::VFS.lock().read_file("welcome.txt") {
+        if let Ok(text) = core::str::from_utf8(&data) {
+            println!("[VFS READ] /welcome.txt -> {}", text);
+            serial_println!("[VFS READ] /welcome.txt -> {}", text);
+        }
+    }
+
+    // Write new file via VFS
+    zenith_kernel::fs::vfs::VFS.lock().write_file("/kernel.log", b"Zenith OS Phase 4 Filesystem Active!");
+    println!("[VFS WRITE] Created /kernel.log cleanly");
+
+    // 8. Test Phase 3 & Phase 4 File Syscalls
     test_user_syscall();
 
-    // 8. Serial Port Output for QEMU / Console logging
+    // 9. Serial Port Output for QEMU / Console logging
     serial_println!("===========================================");
-    serial_println!("ZENITH OS Phase 3 Syscall Boundary Active!");
+    serial_println!("ZENITH OS Phase 4 Drivers & VFS Active!");
     serial_println!("===========================================");
 
-    // 9. Test Breakpoint Exception Handler (#BP)
+    // 10. Test Breakpoint Exception Handler (#BP)
     x86_64::instructions::interrupts::int3();
     println!("[SUCCESS] Breakpoint exception (#BP) handled cleanly!");
 
     #[cfg(test)]
     test_main();
 
-    println!("[STATUS] Zenith OS Phase 3 Kernel active. Listening for IRQs & Syscalls...");
+    println!("[STATUS] Zenith OS Phase 4 Kernel active. Listening for IRQs, VFS & Syscalls...");
 
-    // 10. Halt CPU until next interrupt
+    // 11. Halt CPU until next interrupt
     loop {
         x86_64::instructions::hlt();
     }
