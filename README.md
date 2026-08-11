@@ -25,11 +25,14 @@ E:\Project\NewOS\
             ├── lib.rs               # Kernel library core & test harness
             ├── vga_buffer.rs        # VGA text mode (0xb8000) & formatting macros
             ├── serial.rs            # UART 16550 serial port logging (COM1)
-            ├── gdt.rs               # GDT, TSS & IST interrupt stacks
+            ├── gdt.rs               # GDT, TSS, IST & Ring 3 User Descriptors
             ├── interrupts.rs        # IDT & CPU exception handlers (#BP, #DF, #PF)
             ├── memory.rs            # Physical Frame Allocator & Paging page tables
             ├── allocator.rs         # Kernel Heap Allocator (Box, Vec, BTreeMap)
             ├── pic.rs               # 8259 PIC Hardware Interrupt Controller Remap
+            ├── syscall/             # Fast Syscall Boundary & Dispatcher
+            │   ├── mod.rs           # MSR registers (EFER, LSTAR, SFMASK) init
+            │   └── dispatch.rs      # SYS_WRITE, SYS_YIELD, SYS_EXIT handlers
             └── task/                # Multitasking & Concurrency Engine
                 ├── mod.rs           # TaskId & Task async abstractions
                 └── simple_executor.rs # Kernel Async Task Executor
@@ -53,7 +56,10 @@ E:\Project\NewOS\
   - Hardware Timer (IRQ 0) & Raw PS/2 Keyboard (IRQ 1) handlers
   - `Task` & `TaskId` async abstractions (`src/task/mod.rs`)
   - Kernel Async Task Executor & Multitasking (`src/task/simple_executor.rs`)
-- [ ] **Phase 3: Ring 3 User Mode & Syscalls**
+- [x] **Phase 3: Ring 3 User Mode & Syscall Boundary**
+  - GDT User Code (`0x18|3`) & User Data (`0x20|3`) segment descriptors
+  - Fast hardware syscall MSR configuration (`EFER`, `LStar`, `SFMask`)
+  - Syscall Dispatch Table (`SYS_WRITE`, `SYS_YIELD`, `SYS_EXIT`)
 - [ ] **Phase 4: Drivers, VFS & Filesystem**
 - [ ] **Phase 5: Zenith Shell & Userland Init**
 - [ ] **Phase 6: 3D Brain Compositor & Visual Shell**

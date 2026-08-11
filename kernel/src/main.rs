@@ -57,24 +57,47 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("[TASK EXEC] Running concurrent kernel tasks:");
     executor.run();
 
-    // 7. Serial Port Output for QEMU / Console logging
+    // 7. Test Phase 3 Syscall Boundary
+    test_user_syscall();
+
+    // 8. Serial Port Output for QEMU / Console logging
     serial_println!("===========================================");
-    serial_println!("ZENITH OS Phase 2 Multitasking Active!");
+    serial_println!("ZENITH OS Phase 3 Syscall Boundary Active!");
     serial_println!("===========================================");
 
-    // 8. Test Breakpoint Exception Handler (#BP)
+    // 9. Test Breakpoint Exception Handler (#BP)
     x86_64::instructions::interrupts::int3();
     println!("[SUCCESS] Breakpoint exception (#BP) handled cleanly!");
 
     #[cfg(test)]
     test_main();
 
-    println!("[STATUS] Zenith OS Phase 2 Kernel active. Listening for IRQs...");
+    println!("[STATUS] Zenith OS Phase 3 Kernel active. Listening for IRQs & Syscalls...");
 
-    // 9. Halt CPU until next interrupt
+    // 10. Halt CPU until next interrupt
     loop {
         x86_64::instructions::hlt();
     }
+}
+
+fn test_user_syscall() {
+    println!("[INFO] Initializing Phase 3 User Mode & Syscall Boundary...");
+    let message = "Hello from Ring 3 Syscall Boundary!";
+    let result = zenith_kernel::syscall::dispatch::handle_syscall(
+        zenith_kernel::syscall::dispatch::SYS_WRITE,
+        message.as_ptr() as u64,
+        message.len() as u64,
+        0,
+    );
+    println!("[SYSCALL TEST] SYS_WRITE returned bytes written: {}", result);
+
+    let exit_status = zenith_kernel::syscall::dispatch::handle_syscall(
+        zenith_kernel::syscall::dispatch::SYS_EXIT,
+        0,
+        0,
+        0,
+    );
+    println!("[SYSCALL TEST] SYS_EXIT returned status: {}", exit_status);
 }
 
 async fn async_number() -> u32 {

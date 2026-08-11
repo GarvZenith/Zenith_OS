@@ -15,6 +15,7 @@ pub mod interrupts;
 pub mod memory;
 pub mod pic;
 pub mod serial;
+pub mod syscall;
 pub mod task;
 pub mod vga_buffer;
 
@@ -22,6 +23,7 @@ pub fn init() {
     gdt::init();
     interrupts::init_idt();
     unsafe { pic::PICS.lock().initialize() };
+    syscall::init();
     x86_64::instructions::interrupts::enable();
 }
 
