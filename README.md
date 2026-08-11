@@ -28,7 +28,11 @@ E:\Project\NewOS\
             ├── gdt.rs               # GDT, TSS & IST interrupt stacks
             ├── interrupts.rs        # IDT & CPU exception handlers (#BP, #DF, #PF)
             ├── memory.rs            # Physical Frame Allocator & Paging page tables
-            └── allocator.rs         # Kernel Heap Allocator (Box, Vec, BTreeMap)
+            ├── allocator.rs         # Kernel Heap Allocator (Box, Vec, BTreeMap)
+            ├── pic.rs               # 8259 PIC Hardware Interrupt Controller Remap
+            └── task/                # Multitasking & Concurrency Engine
+                ├── mod.rs           # TaskId & Task async abstractions
+                └── simple_executor.rs # Kernel Async Task Executor
 ```
 
 ---
@@ -44,7 +48,11 @@ E:\Project\NewOS\
   - Physical Frame Allocator & Level 4 Page Table mapping (`src/memory.rs`)
   - 100 KiB Kernel Heap Allocator (`src/allocator.rs`)
   - Dynamic memory allocations (`Box`, `Vec`) in kernel space
-- [ ] **Phase 2: Preemptive Task Scheduler & Concurrency**
+- [x] **Phase 2: Preemptive Task Scheduler & Concurrency**
+  - 8259 PIC Interrupt Controller Remapping (`src/pic.rs`)
+  - Hardware Timer (IRQ 0) & Raw PS/2 Keyboard (IRQ 1) handlers
+  - `Task` & `TaskId` async abstractions (`src/task/mod.rs`)
+  - Kernel Async Task Executor & Multitasking (`src/task/simple_executor.rs`)
 - [ ] **Phase 3: Ring 3 User Mode & Syscalls**
 - [ ] **Phase 4: Drivers, VFS & Filesystem**
 - [ ] **Phase 5: Zenith Shell & Userland Init**
